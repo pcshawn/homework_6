@@ -310,15 +310,15 @@ dbl (4): row, number, width, height
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">keys =</span> key_order_counts<span class="sc">$</span>key,</span>
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">fill =</span> key_order_counts<span class="sc">$</span>color,</span>
 <span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">alpha =</span> <span class="fl">0.7</span>,</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">colour =</span> <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">colour =</span> <span class="st">"white"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="homework_6_files/figure-html/data-renewed-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
 </section>
-<section id="repeating-task-3-but-with-all-letters" class="level2">
-<h2 class="anchored" data-anchor-id="repeating-task-3-but-with-all-letters">Repeating Task 3, but with all letters</h2>
+<section id="task-4-repeating-task-3-but-with-all-letters" class="level2">
+<h2 class="anchored" data-anchor-id="task-4-repeating-task-3-but-with-all-letters">Task 4: Repeating Task 3, but with all letters</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>All <span class="sc">|&gt;</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
@@ -378,36 +378,6 @@ dbl (4): row, number, width, height
 <p><img src="homework_6_files/figure-html/data-renewed-2-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>--- title: “Wordle on keyboard” subtitle: “Coding out loud, Ep 4” author: “Shawn Ma” output: github_document editor_options: chunk_output_type: console ---</p>
-<p>{r} library(tidyverse) devtools::install_github(“sharlagelfand/ggkeyboard”, ref = “main”) library(ggkeyboard) # https://github.com/sharlagelfand/ggkeyboard</p>
-<p><strong>Inspiration</strong></p>
-<p><a href="https://twitter.com/monachalabi/status/772102591694209024">English keyboard heatmap</a> by <a href="https://twitter.com/MonaChalabi">Mona Chalabi</a></p>
-<p><strong>Task 1: Find the first letter of Wordle words</strong></p>
-<p>From <a href="https://github.com/tabatkins/wordle-list" class="uri">https://github.com/tabatkins/wordle-list</a>.</p>
-<p>{r} #| label: read-data wordle &lt;- read_csv(“https://raw.githubusercontent.com/tabatkins/wordle-list/main/words”, col_names = “word”)</p>
-<p>{r} #| label: get-first-letter first &lt;- wordle |&gt; mutate(first_letter = str_sub(word, start = 1, end = 1)) wordle_counts &lt;- first |&gt; count(first_letter, sort = TRUE)</p>
-<p>{r} #| label: get-total-letters first &lt;- wordle |&gt; mutate(letter = str_sub(word, start = 1, end = 1)) |&gt; count(letter, sort = TRUE) second &lt;- wordle |&gt; mutate(letter = str_sub(word, start = 2, end = 2)) |&gt; count(letter, sort = TRUE) third &lt;- wordle |&gt; mutate(letter = str_sub(word, start = 3, end = 3)) |&gt; count(letter, sort = TRUE) fourth &lt;- wordle |&gt; mutate(letter = str_sub(word, start = 4, end = 4)) |&gt; count(letter, sort = TRUE) fifth &lt;- wordle |&gt; mutate(letter = str_sub(word, start = 5, end = 5)) |&gt; count(letter, sort = TRUE) joined &lt;- left_join(first, second, by = “letter”) |&gt; left_join(third, by = “letter”) |&gt; left_join(fourth, by = “letter”) |&gt; left_join(fifth, by = “letter”) numbers &lt;- joined |&gt; select(-letter) letters &lt;- joined |&gt; select(letter) All &lt;- joined |&gt; mutate(sum = rowSums(joined[2:6]))</p>
-<p><strong>Task 2: Draw a keyboard</strong></p>
-<p>{r} #| label: default-keyboard ggkeyboard(tkl, layout = “iso”)</p>
-<p><strong>Task 3: Color keyboard keys based on frequency of first letter</strong></p>
-<p>{r} #| label: color-scale wordle_counts |&gt; summarize( min = min(n), max = max(n), mean = mean(n), sd = sd(n), q20 = quantile(n, 0.20), q40 = quantile(n, 0.40), q60 = quantile(n, 0.60), q80 = quantile(n, 0.80))</p>
-<p>{r} #| label: graph-dis ggplot(wordle_counts, aes(x = n)) + geom_histogram(binwidth = 100) ggplot(wordle_counts, aes(x = first_letter, y = n)) + geom_col() + geom_hline(yintercept = 100)</p>
-<p><strong>Color options</strong></p>
-<p>Dark Blue - “#2D6698” - 0</p>
-<p>Light Blue - “#359CA8” - 100</p>
-<p>Green - “#B8C222” - 217</p>
-<p>Yellow - “#EEDD49” - 429</p>
-<p>Orange - “#F2BC4A” - 646</p>
-<p>Dark Orange - “#FB704A” - 882</p>
-<p>Red - “BE372C” - 1000</p>
-<p>{r} #| label: muatation-of-dataset wordle_counts &lt;- wordle_counts |&gt; mutate( color = case_when( (n == 0) ~ “#2D6698”, (n &gt; 0 &amp; n &lt;= 100) ~ “#359CA8”, (n &gt; 100 &amp; n &lt;= 217) ~ “#B8C222”, (n &gt; 217 &amp; n &lt;= 429) ~ “#EEDD49”, (n &gt; 429 &amp; n &lt;= 646) ~ “#F2BC4A”, (n &gt; 646 &amp; n &lt;= 1000) ~ “#FB704A”, (n &gt;= 1000) ~ “#BE372C”), first_letter = str_to_upper(first_letter)) |&gt; arrange(first_letter)</p>
-<p>{r} #| label: color-coding-keyboard ggkeyboard(sixty_percent, palette = keyboard_palette(“magic”)) |&gt; highlight_keys( keys = wordle_counts$first_letter, fill = wordle_counts$color, alpha = 0.7, colour = NA)</p>
-<p>{r} #| label: data-renewed key &lt;- read_csv(“https://raw.githubusercontent.com/sharlagelfand/ggkeyboard/061f0d9084d76d576200e81439311983e1d50d93/data-raw/sixty_percent.csv”) key_order_counts &lt;- key |&gt; filter(key %in% LETTERS) |&gt; mutate(key = key_label) |&gt; select(key) |&gt; left_join(wordle_counts, by = c(“key” = “first_letter”)) ggkeyboard(sixty_percent, palette = keyboard_palette(“magic”)) |&gt; highlight_keys( keys = key_order_counts$key, fill = key_order_counts$color, alpha = 0.7, colour = NA)</p>
-<p><strong>Repeating Task 3, but with all letters</strong></p>
-<p>{r} #| label: color-scale-2 All |&gt; summarize( min = min(sum), max = max(sum), mean = mean(sum), sd = sd(sum), q20 = quantile(sum, 0.20), q40 = quantile(sum, 0.40), q60 = quantile(sum, 0.60), q80 = quantile(sum, 0.80))</p>
-<p>{r} #| label: muatation-of-dataset-2 All &lt;- All |&gt; mutate( color = case_when( (sum == 0) ~ “#2D6698”, (sum &gt; 0 &amp; sum &lt;= 1127) ~ “#359CA8”, (sum &gt; 1127 &amp; sum &lt;= 1993) ~ “#B8C222”, (sum &gt; 1993 &amp; sum &lt;= 2735) ~ “#EEDD49”, (sum &gt; 2735 &amp; sum &lt;= 4381) ~ “#F2BC4A”, (sum &gt; 4381 &amp; sum &lt;= 6000) ~ “#FB704A”, (sum &gt;= 6000) ~ “#BE372C”), letter = str_to_upper(letter))</p>
-<p>{r} #| label: data-renewed-2 key &lt;- read_csv(“https://raw.githubusercontent.com/sharlagelfand/ggkeyboard/061f0d9084d76d576200e81439311983e1d50d93/data-raw/sixty_percent.csv”) key_order_counts_2 &lt;- key |&gt; filter(key %in% LETTERS) |&gt; mutate(key = key_label) |&gt; select(key) |&gt; left_join(All, by = c(“key” = “letter”)) ggkeyboard(sixty_percent, palette = keyboard_palette(“magic”)) |&gt; highlight_keys( keys = key_order_counts_2$key, fill = key_order_counts_2$color, alpha = 0.7, colour = NA)</p>
-<p>&nbsp;</p>
 </section>
 
 </main>

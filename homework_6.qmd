@@ -171,10 +171,10 @@ ggkeyboard(sixty_percent, palette = keyboard_palette("magic")) |>
      keys = key_order_counts$key,
      fill = key_order_counts$color,
      alpha = 0.7,
-     colour = NA)
+     colour = "white")
 ```
 
-## Repeating Task 3, but with all letters
+## Task 4: Repeating Task 3, but with all letters
 
 ```{r}
 #| label: color-scale-2
@@ -225,132 +225,3 @@ ggkeyboard(sixty_percent, palette = keyboard_palette("magic")) |>
      alpha = 0.7,
      colour = NA)
 ```
-
-\-\-- title: "Wordle on keyboard" subtitle:
-"Coding out loud, Ep 4" author: "Shawn Ma" output:
-github_document editor_options: chunk_output_type: console \-\--
-
-{r} library(tidyverse)
-devtools::install_github("sharlagelfand/ggkeyboard", ref =
-"main") library(ggkeyboard) #
-https://github.com/sharlagelfand/ggkeyboard
-
-**Inspiration**
-
-[English keyboard heatmap](https://twitter.com/monachalabi/status/772102591694209024) by [Mona Chalabi](https://twitter.com/MonaChalabi)
-
-**Task 1: Find the first letter of
-Wordle words**
-
-From
-<https://github.com/tabatkins/wordle-list>.
-
-{r} #\| label: read-data wordle \<- read_csv("https://raw.githubusercontent.com/tabatkins/wordle-list/main/words",
-col_names = "word")
-
-{r} #\| label: get-first-letter first \<- wordle \|\>
-mutate(first_letter = str_sub(word, start = 1, end = 1)) wordle_counts \<-
-first \|\> count(first_letter, sort = TRUE)
-
-{r} #\| label: get-total-letters first \<- wordle \|\>
-mutate(letter = str_sub(word, start = 1, end = 1)) \|\> count(letter, sort =
-TRUE) second \<- wordle \|\> mutate(letter = str_sub(word, start = 2, end =
-2)) \|\> count(letter, sort = TRUE) third \<- wordle \|\> mutate(letter =
-str_sub(word, start = 3, end = 3)) \|\> count(letter, sort = TRUE) fourth
-\<- wordle \|\> mutate(letter = str_sub(word, start = 4, end = 4)) \|\>
-count(letter, sort = TRUE) fifth \<- wordle \|\> mutate(letter =
-str_sub(word, start = 5, end = 5)) \|\> count(letter, sort = TRUE) joined
-\<- left_join(first, second, by = "letter") \|\> left_join(third,
-by = "letter") \|\> left_join(fourth, by = "letter") \|\>
-left_join(fifth, by = "letter") numbers \<- joined \|\>
-select(-letter) letters \<- joined \|\> select(letter) All \<- joined
-\|\> mutate(sum = rowSums(joined\[2:6\]))
-
-**Task 2: Draw a keyboard**
-
-{r} #\| label: default-keyboard ggkeyboard(tkl, layout =
-"iso")
-
-**Task 3: Color keyboard keys based on
-frequency of first letter**
-
-{r} #\| label: color-scale wordle_counts \|\> summarize( min
-= min(n), max = max(n), mean = mean(n), sd = sd(n), q20 = quantile(n, 0.20),
-q40 = quantile(n, 0.40), q60 = quantile(n, 0.60), q80 = quantile(n, 0.80))
-
-{r} #\| label: graph-dis ggplot(wordle_counts, aes(x = n)) +
-geom_histogram(binwidth = 100) ggplot(wordle_counts, aes(x = first_letter, y =
-n)) + geom_col() + geom_hline(yintercept = 100)
-
-**Color options**
-
-Dark
-Blue - "#2D6698" - 0
-
-Light
-Blue - "#359CA8" - 100
-
-Green
-- "#B8C222" - 217
-
-Yellow
-- "#EEDD49" - 429
-
-Orange
-- "#F2BC4A" - 646
-
-Dark
-Orange - "#FB704A" - 882
-
-Red
-- "BE372C" - 1000
-
-{r} #\| label: muatation-of-dataset wordle_counts \<-
-wordle_counts \|\> mutate( color = case_when( (n == 0) \~ "#2D6698",
-(n \> 0 & n \<= 100) \~ "#359CA8", (n \> 100 & n \<=
-217) \~ "#B8C222", (n \> 217 & n \<= 429) \~
-"#EEDD49", (n \> 429 & n \<= 646) \~ "#F2BC4A", (n
-\> 646 & n \<= 1000) \~ "#FB704A", (n \>= 1000) \~
-"#BE372C"), first_letter = str_to_upper(first_letter)) \|\>
-arrange(first_letter)
-
-{r} #\| label: color-coding-keyboard
-ggkeyboard(sixty_percent, palette = keyboard_palette("magic")) \|\>
-highlight_keys( keys = wordle_counts\$first_letter, fill = wordle_counts\$color,
-alpha = 0.7, colour = NA)
-
-{r} #\| label: data-renewed key \<-
-read_csv("https://raw.githubusercontent.com/sharlagelfand/ggkeyboard/061f0d9084d76d576200e81439311983e1d50d93/data-raw/sixty_percent.csv")
-key_order_counts \<- key \|\> filter(key %in% LETTERS) \|\> mutate(key =
-key_label) \|\> select(key) \|\> left_join(wordle_counts, by =
-c("key" = "first_letter")) ggkeyboard(sixty_percent,
-palette = keyboard_palette("magic")) \|\> highlight_keys( keys = key_order_counts\$key,
-fill = key_order_counts\$color, alpha = 0.7, colour = NA)
-
-**Repeating Task 3, but with all
-letters**
-
-{r} #\| label: color-scale-2 All \|\> summarize( min =
-min(sum), max = max(sum), mean = mean(sum), sd = sd(sum), q20 = quantile(sum,
-0.20), q40 = quantile(sum, 0.40), q60 = quantile(sum, 0.60), q80 =
-quantile(sum, 0.80))
-
-{r} #\| label: muatation-of-dataset-2 All \<- All \|\>
-mutate( color = case_when( (sum == 0) \~ "#2D6698", (sum \> 0 &
-sum \<= 1127) \~ "#359CA8", (sum \> 1127 & sum \<= 1993) \~
-"#B8C222", (sum \> 1993 & sum \<= 2735) \~
-"#EEDD49", (sum \> 2735 & sum \<= 4381) \~
-"#F2BC4A", (sum \> 4381 & sum \<= 6000) \~
-"#FB704A", (sum \>= 6000) \~ "#BE372C"), letter =
-str_to_upper(letter))
-
-{r} #\| label: data-renewed-2 key \<-
-read_csv("https://raw.githubusercontent.com/sharlagelfand/ggkeyboard/061f0d9084d76d576200e81439311983e1d50d93/data-raw/sixty_percent.csv")
-key_order_counts_2 \<- key \|\> filter(key %in% LETTERS) \|\> mutate(key =
-key_label) \|\> select(key) \|\> left_join(All, by = c("key" =
-"letter")) ggkeyboard(sixty_percent, palette =
-keyboard_palette("magic")) \|\> highlight_keys( keys =
-key_order_counts_2\$key, fill = key_order_counts_2\$color, alpha = 0.7, colour =
-NA)
-
- 
